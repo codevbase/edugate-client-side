@@ -1,0 +1,13 @@
+
+
+.navbar .active,
+.menu .active {
+  font-weight: bold;
+  color: #0284c7 !important; /* sky-600 */
+  text-decoration: underline;
+}
+
+/* Optionally, for better transition */
+.menu .active {
+  transition: color 0.2s, text-decoration 0.2s;
+}
