@@ -1,10 +1,8 @@
 import React, { useContext, useState } from 'react';
-
 import { Link, NavLink } from 'react-router';
-
-
 import './Header.css';
 import { AuthContext } from '../../contexts/AuthContext';
+
 
 const Header = () => {
     const {user} = useContext(AuthContext);
@@ -40,10 +38,13 @@ const Header = () => {
                         </ul>
                     </div>
                     <Link to="/" className="normal-case text-xl flex items-center justify-center">
-                        <p className={`font-bold flex flex-row justify-center items-center`}>
+                        <div>
+                            <img src="./logo.png" alt="logo" style={{width:60, height:60}} />
+                        </div>
+                        {/* <p className={`font-bold flex flex-row justify-center items-center`}>
                             <span>EduGate</span>
                         
-                        </p>
+                        </p> */}
                     </Link>
                 </div>
                 <div className="navbar-center hidden lg:flex">
