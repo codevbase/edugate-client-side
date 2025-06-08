@@ -26,7 +26,7 @@ const Header = () => {
     }
 
     return (
-        <div className={`shadow-3xl`}>
+        <div className={`shadow-3xl bg-gray-300`}>
             <div className='w-11/12 mx-auto navbar'>
                 <div className="navbar-start">
                     <div className="dropdown">
