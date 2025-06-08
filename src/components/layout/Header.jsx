@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 
 import { Link, NavLink } from 'react-router';
 
 
 import './Header.css';
+import { AuthContext } from '../../contexts/AuthContext';
 
 const Header = () => {
+    const {user} = useContext(AuthContext);
     
     const [showDropdown, setShowDropdown] = useState(false);
 
