@@ -19,9 +19,14 @@ const Register = () => {
         const name = form.name.value;
         const email = form.email.value;
         const password = form.password.value;
+        const confirmPassword = form.confirmPassword.value;
         const photoUrl = form.photourl.value;
 
         // Password validation
+        if (password.length < 8) {
+            setPasswordError('Password must be at least 8 characters long.');
+            return;
+        }
         if (!/[A-Z]/.test(password)) {
             setPasswordError('Password must contain at least one uppercase letter.');
             return;
@@ -30,8 +35,20 @@ const Register = () => {
             setPasswordError('Password must contain at least one lowercase letter.');
             return;
         }
-        if (password.length < 6) {
-            setPasswordError('Password must be at least 6 characters long.');
+        if (!/[0-9]/.test(password)) {
+            setPasswordError('Password must contain at least one number.');
+            return;
+        }
+        if (!/[^A-Za-z0-9]/.test(password)) {
+            setPasswordError('Password must contain at least one special character.');
+            return;
+        }
+        if (password.toLowerCase().includes(email.toLowerCase())) {
+            setPasswordError('Password cannot contain your email address.');
+            return;
+        }
+        if (password !== confirmPassword) {
+            setPasswordError('Password and Confirm Password do not match.');
             return;
         }
         setPasswordError('');
@@ -46,7 +63,6 @@ const Register = () => {
             });
             await auth.currentUser.reload();
             setUser(auth.currentUser); // Update context with latest user info
-            // No need to call sendUserToDB here, handled globally in AuthProvider
             form.reset();
             navigate(location?.state?.from?.pathname || '/');
             Swal.fire({
@@ -57,6 +73,7 @@ const Register = () => {
                 timer: 1500
             });
         } catch (error) {
+            setPasswordError(error.message || 'Registration failed.');
             console.error(error);
         } finally {
             setLoading(false);
@@ -100,14 +117,15 @@ const Register = () => {
                 <form onSubmit={handleRegister} className="fieldset">
                     <label className="label">Name</label>
                     <input type="text" name="name" className="input" placeholder="Name" required />
+                    <label className="label">Photo URL</label>
+                    <input type="text" name="photourl" className="input" placeholder="Photo URL" />
                     <label className="label">Email</label>
                     <input type="email" name="email" className="input" placeholder="Email" required />
                     <label className="label">Password</label>
                     <input type="password" name="password" className="input" placeholder="Password" required />
-                    {passwordError && <p className="text-red-500 text-sm mt-1">{passwordError}</p>}                   
-                    <label className="label">Photo-url</label>
-                    <input type="text" name="photourl" className="input" placeholder="photourl" />
-                    
+                    <label className="label">Confirm Password</label>
+                    <input type="password" name="confirmPassword" className="input" placeholder="Confirm Password" required />
+                    {passwordError && <p className="text-red-500 text-sm mt-1">{passwordError}</p>}
                     <button className="btn btn-neutral mt-4">Register</button>
                 </form>
                 <div className="flex flex-col gap-2 mt-4">
