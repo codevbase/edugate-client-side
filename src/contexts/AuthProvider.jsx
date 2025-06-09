@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { AuthContext } from './AuthContext';
 import { useState } from 'react';
-import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup, signOut } from 'firebase/auth';
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup, signOut, GithubAuthProvider } from 'firebase/auth';
 import { auth } from '../config/firebase';
 // import firebase from 'firebase/compat/app';
 
@@ -41,6 +41,13 @@ const AuthProvider = ({children}) => {
           .finally(() => setLoading(false));
       };
 
+    // Github sign in
+    const signInWithGithub = () => {
+        setLoading(true);
+        const provider = new GithubAuthProvider();
+        return signInWithPopup(auth, provider)
+            .finally(() => setLoading(false));
+    };
 
     // Observe auth state changes
     useEffect(() => {
@@ -61,7 +68,7 @@ const AuthProvider = ({children}) => {
         signInUser,
         signOutUser,
         signInWithGoogle,
-
+        signInWithGithub,
     }
 
     return (
