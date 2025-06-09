@@ -5,9 +5,10 @@ import { auth } from '../../config/firebase';
 import Swal from 'sweetalert2';
 import { updateProfile } from 'firebase/auth';
 import { FcGoogle } from 'react-icons/fc';
+import { FaGithub } from 'react-icons/fa';
 
 const Register = () => {
-    const { createUser, setUser, signInWithGoogle } = useContext(AuthContext);
+    const { createUser, setUser, signInWithGoogle, signInWithGithub } = useContext(AuthContext);
     const navigate = useNavigate();
     const location = useLocation();
     const [passwordError, setPasswordError] = useState(''); // State for password error
@@ -102,6 +103,36 @@ const Register = () => {
         }
     };
 
+    const handleGithubLogin = async () => {
+        setPasswordError('');
+        setLoading(true);
+        try {
+            await signInWithGithub();
+            // No need to call sendUserToDB here, handled globally in AuthProvider
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: 'Signed up with Github',
+                showConfirmButton: false,
+                timer: 1500
+            });
+            navigate(location?.state?.from?.pathname || '/');
+        } catch (error) {
+            if (
+                error.code === 'auth/account-exists-with-different-credential' ||
+                error.message?.includes('auth/account-exists-with-different-credential')
+            ) {
+                setPasswordError('An account already exists with the same email address but different sign-in credentials. Please use the original provider to log in.');
+            } else {
+                setPasswordError('Github login failed');
+            }
+            console.error('Github signup failed:', error); // Add this for debugging
+        } finally {
+            setLoading(false);
+        }
+
+    }
+
     if (loading) {
         return (
             <div className="flex justify-center items-center min-h-screen">
@@ -132,6 +163,11 @@ const Register = () => {
                     <button type="button" className="btn btn-outline btn-primary flex items-center justify-center gap-2" onClick={handleGoogleLogin}>
                         <FcGoogle size={22} />
                         Continue with Google
+                    </button>
+
+                    <button type="button" className="btn btn-outline btn-neutral flex items-center justify-center gap-2" onClick={handleGithubLogin} disabled={loading}>
+                        <FaGithub size={22} />
+                        Continue with Github
                     </button>
                 </div>
                 <p>Already have an account? Please <Link className="text-blue-400 underline" to="/login">Login</Link></p>

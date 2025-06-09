@@ -71,8 +71,15 @@ const Login = () => {
                    timer: 1500
                });
                navigate(location?.state?.from?.pathname || '/');
-           } catch {
-               setError('Github login failed');
+           } catch (err) {
+               if (
+                   err.code === 'auth/account-exists-with-different-credential' ||
+                   err.message?.includes('auth/account-exists-with-different-credential')
+               ) {
+                   setError('An account already exists with the same email address but different sign-in credentials. Please use the original provider to log in.');
+               } else {
+                   setError('Github login failed');
+               }
            } finally {
                setLoading(false);
            }

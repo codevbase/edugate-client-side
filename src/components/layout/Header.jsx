@@ -72,14 +72,14 @@ const Header = () => {
                                 <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-2 py-1 bg-gray-400 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-10">
                                     {user.displayName}
                                     <button
-                                        className={`block w-full text-center rounded-md px-4 py-2 `}
+                                        className={`block w-full text-center rounded-md px-4 py-2 cursor-pointer `}
                                         onClick={handleLogout}
                                     >
                                         Logout
                                     </button>
                                 </div>
                             </div>
-                            {showDropdown && (
+                            {/* {showDropdown && (
                                 <div className={`absolute right-0 mt-2 w-40 rounded shadow-lg z-10`}>
                                     <Link
                                         to={``}
@@ -95,7 +95,7 @@ const Header = () => {
                                         Logout
                                     </button>
                                 </div>
-                            )}
+                            )} */}
                         </div>
                     ) : (
                         <Link to="/login" className="btn">Login</Link>
