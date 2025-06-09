@@ -13,7 +13,7 @@ const Register = () => {
     const [passwordError, setPasswordError] = useState(''); // State for password error
     const [loading, setLoading] = useState(false); // State for loading
 
-    const handleSignup = async e => {
+    const handleRegister = async e => {
         e.preventDefault();
         const form = e.target;
         const name = form.name.value;
@@ -97,7 +97,7 @@ const Register = () => {
         <div className="card bg-base-100 w-full mx-auto max-w-sm shrink-0 shadow-2xl my-5 pb-10">
             <h1 className="text-3xl text-center font-bold">Register now!</h1>
             <div className="card-body">
-                <form onSubmit={handleSignup} className="fieldset">
+                <form onSubmit={handleRegister} className="fieldset">
                     <label className="label">Name</label>
                     <input type="text" name="name" className="input" placeholder="Name" required />
                     <label className="label">Email</label>
@@ -108,7 +108,7 @@ const Register = () => {
                     <label className="label">Photo-url</label>
                     <input type="text" name="photourl" className="input" placeholder="photourl" />
                     
-                    <button className="btn btn-neutral mt-4">Signup</button>
+                    <button className="btn btn-neutral mt-4">Register</button>
                 </form>
                 <div className="flex flex-col gap-2 mt-4">
                     <button type="button" className="btn btn-outline btn-primary flex items-center justify-center gap-2" onClick={handleGoogleLogin}>

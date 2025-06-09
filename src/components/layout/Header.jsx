@@ -5,20 +5,26 @@ import { AuthContext } from '../../contexts/AuthContext';
 
 
 const Header = () => {
-    const {user} = useContext(AuthContext);
+    const {user,signOutUser} = useContext(AuthContext);
     
     const [showDropdown, setShowDropdown] = useState(false);
 
     const links = (
         <>
             <li><NavLink to="/" className={({ isActive }) => isActive ? 'active' : ''}>Home</NavLink></li>
+
+
+             {!user && <>
+                <li><NavLink to="/login" className={({ isActive }) => isActive ? 'active' : ''}>Login</NavLink></li>
+                <li><NavLink to="/register" className={({ isActive }) => isActive ? 'active' : ''}>Register</NavLink></li>
+            </>}
            
         </>
     );
 
     const handleLogout = async () => {
         try {
-            // await signOutUser();
+            await signOutUser();
             setShowDropdown(false);
         } catch (error) {
             console.error('Logout failed:', error);
