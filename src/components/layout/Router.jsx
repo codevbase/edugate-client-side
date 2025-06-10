@@ -3,6 +3,7 @@ import Root from "./Root";
 import Home from "../../pages/Home";
 import Login from '../../pages/auth/Login';
 import Register from '../../pages/auth/Register';
+import NotFound from "../../pages/NotFound";
 
 
 const router = createBrowserRouter([
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
 
         ],
     },
+    {
+        path: "*",
+        Component: NotFound
+    }
 ]);
 
 export default router;
