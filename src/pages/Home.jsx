@@ -5,6 +5,7 @@ import "slick-carousel/slick/slick-theme.css";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useNavigate } from 'react-router';
+import { Helmet } from 'react-helmet-async';
 
 const sliderData = [
     {
@@ -142,70 +143,75 @@ const Home = () => {
         )
     };
     return (
-        <section className="w-full max-w-5xl mx-auto mt-8 mb-12 relative px-2 sm:px-4">
-            <button
-                className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow p-2 hover:bg-gray-100 transition border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                onClick={() => sliderRef.current.slickPrev()}
-                aria-label="Previous Slide"
-                style={{ left: 0 }}
-            >
-                <FaChevronLeft  size={24} />
-            </button>
-            <button
-                className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow p-2 hover:bg-gray-100 transition border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                onClick={() => sliderRef.current.slickNext()}
-                aria-label="Next Slide"
-                style={{ right: 0 }}
-            >
-                <FaChevronRight size={24} />
-            </button>
-            <div style={{ width: '100%', height: 'min(60vw, 420px)', minHeight: '260px' }}>
-                <Slider ref={sliderRef} {...settings}>
-                    {sliderData.map((slide, idx) => (
-                        <div key={idx} style={sliderStyles.slide}>
-                            <img src={slide.bg} alt={slide.title + ' background'} style={sliderStyles.bg} loading="lazy" />
-                            <div style={sliderStyles.overlay} aria-hidden="true"></div>
-                            <motion.div
-                                style={sliderStyles.content}
-                                initial="initial"
-                                animate="animate"
-                                exit="exit"
-                                variants={slideVariants}
-                                key={slide.title}
-                            >
-                                <motion.h2
-                                    style={sliderStyles.title}
-                                    initial={{ opacity: 0, y: 30 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.2, duration: 0.7, type: 'spring' }}
+        <>
+            <Helmet>
+                <title>Home | EduGate</title>
+            </Helmet>
+            <section className="w-full max-w-5xl mx-auto mt-8 mb-12 relative px-2 sm:px-4">
+                <button
+                    className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow p-2 hover:bg-gray-100 transition border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    onClick={() => sliderRef.current.slickPrev()}
+                    aria-label="Previous Slide"
+                    style={{ left: 0 }}
+                >
+                    <FaChevronLeft  size={24} />
+                </button>
+                <button
+                    className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow p-2 hover:bg-gray-100 transition border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    onClick={() => sliderRef.current.slickNext()}
+                    aria-label="Next Slide"
+                    style={{ right: 0 }}
+                >
+                    <FaChevronRight size={24} />
+                </button>
+                <div style={{ width: '100%', height: 'min(60vw, 420px)', minHeight: '260px' }}>
+                    <Slider ref={sliderRef} {...settings}>
+                        {sliderData.map((slide, idx) => (
+                            <div key={idx} style={sliderStyles.slide}>
+                                <img src={slide.bg} alt={slide.title + ' background'} style={sliderStyles.bg} loading="lazy" />
+                                <div style={sliderStyles.overlay} aria-hidden="true"></div>
+                                <motion.div
+                                    style={sliderStyles.content}
+                                    initial="initial"
+                                    animate="animate"
+                                    exit="exit"
+                                    variants={slideVariants}
+                                    key={slide.title}
                                 >
-                                    {slide.title}
-                                </motion.h2>
-                                <motion.p
-                                    style={sliderStyles.subtitle}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.4, duration: 0.7, type: 'spring' }}
-                                >
-                                    {slide.subtitle}
-                                </motion.p>
-                                <motion.button
-                                    style={sliderStyles.cta}
-                                    whileHover={{ scale: 1.07, background: 'linear-gradient(90deg, #1e293b 0%, #2563eb 100%)' }}
-                                    whileTap={{ scale: 0.97 }}
-                                    onClick={() => navigate('/courses')}
-                                    tabIndex={0}
-                                    aria-label="Explore Courses"
-                                    transition={{ type: 'spring', stiffness: 300 }}
-                                >
-                                    Explore Courses
-                                </motion.button>
-                            </motion.div>
-                        </div>
-                    ))}
-                </Slider>
-            </div>
-        </section>
+                                    <motion.h2
+                                        style={sliderStyles.title}
+                                        initial={{ opacity: 0, y: 30 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.2, duration: 0.7, type: 'spring' }}
+                                    >
+                                        {slide.title}
+                                    </motion.h2>
+                                    <motion.p
+                                        style={sliderStyles.subtitle}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.4, duration: 0.7, type: 'spring' }}
+                                    >
+                                        {slide.subtitle}
+                                    </motion.p>
+                                    <motion.button
+                                        style={sliderStyles.cta}
+                                        whileHover={{ scale: 1.07, background: 'linear-gradient(90deg, #1e293b 0%, #2563eb 100%)' }}
+                                        whileTap={{ scale: 0.97 }}
+                                        onClick={() => navigate('/courses')}
+                                        tabIndex={0}
+                                        aria-label="Explore Courses"
+                                        transition={{ type: 'spring', stiffness: 300 }}
+                                    >
+                                        Explore Courses
+                                    </motion.button>
+                                </motion.div>
+                            </div>
+                        ))}
+                    </Slider>
+                </div>
+            </section>
+        </>
     );
 };
 

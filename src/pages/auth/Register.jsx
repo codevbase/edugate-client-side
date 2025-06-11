@@ -6,6 +6,7 @@ import Swal from 'sweetalert2';
 import { updateProfile } from 'firebase/auth';
 import { FcGoogle } from 'react-icons/fc';
 import { FaGithub } from 'react-icons/fa';
+import { Helmet } from 'react-helmet-async';
 
 const Register = () => {
     const { createUser, setUser, signInWithGoogle, signInWithGithub } = useContext(AuthContext);
@@ -142,37 +143,42 @@ const Register = () => {
     }
 
     return (
-        <div className="card bg-base-100 w-full mx-auto max-w-sm shrink-0 shadow-2xl my-5 pb-10">
-            <h1 className="text-3xl text-center font-bold">Register now!</h1>
-            <div className="card-body">
-                <form onSubmit={handleRegister} className="fieldset">
-                    <label className="label">Name</label>
-                    <input type="text" name="name" className="input" placeholder="Name" required />
-                    <label className="label">Photo URL</label>
-                    <input type="text" name="photourl" className="input" placeholder="Photo URL" />
-                    <label className="label">Email</label>
-                    <input type="email" name="email" className="input" placeholder="Email" required />
-                    <label className="label">Password</label>
-                    <input type="password" name="password" className="input" placeholder="Password" required />
-                    <label className="label">Confirm Password</label>
-                    <input type="password" name="confirmPassword" className="input" placeholder="Confirm Password" required />
-                    {passwordError && <p className="text-red-500 text-sm mt-1">{passwordError}</p>}
-                    <button className="btn btn-neutral mt-4">Register</button>
-                </form>
-                <div className="flex flex-col gap-2 mt-4">
-                    <button type="button" className="btn btn-outline btn-primary flex items-center justify-center gap-2" onClick={handleGoogleLogin}>
-                        <FcGoogle size={22} />
-                        Continue with Google
-                    </button>
+        <>
+            <Helmet>
+                <title>Register | EduGate</title>
+            </Helmet>
+            <div className="card bg-base-100 w-full mx-auto max-w-sm shrink-0 shadow-2xl my-5 pb-10">
+                <h1 className="text-3xl text-center font-bold">Register now!</h1>
+                <div className="card-body">
+                    <form onSubmit={handleRegister} className="fieldset">
+                        <label className="label">Name</label>
+                        <input type="text" name="name" className="input" placeholder="Name" required />
+                        <label className="label">Photo URL</label>
+                        <input type="text" name="photourl" className="input" placeholder="Photo URL" />
+                        <label className="label">Email</label>
+                        <input type="email" name="email" className="input" placeholder="Email" required />
+                        <label className="label">Password</label>
+                        <input type="password" name="password" className="input" placeholder="Password" required />
+                        <label className="label">Confirm Password</label>
+                        <input type="password" name="confirmPassword" className="input" placeholder="Confirm Password" required />
+                        {passwordError && <p className="text-red-500 text-sm mt-1">{passwordError}</p>}
+                        <button className="btn btn-neutral mt-4">Register</button>
+                    </form>
+                    <div className="flex flex-col gap-2 mt-4">
+                        <button type="button" className="btn btn-outline btn-primary flex items-center justify-center gap-2" onClick={handleGoogleLogin}>
+                            <FcGoogle size={22} />
+                            Continue with Google
+                        </button>
 
-                    <button type="button" className="btn btn-outline btn-neutral flex items-center justify-center gap-2" onClick={handleGithubLogin} disabled={loading}>
-                        <FaGithub size={22} />
-                        Continue with Github
-                    </button>
+                        <button type="button" className="btn btn-outline btn-neutral flex items-center justify-center gap-2" onClick={handleGithubLogin} disabled={loading}>
+                            <FaGithub size={22} />
+                            Continue with Github
+                        </button>
+                    </div>
+                    <p>Already have an account? Please <Link className="text-blue-400 underline" to="/login">Login</Link></p>
                 </div>
-                <p>Already have an account? Please <Link className="text-blue-400 underline" to="/login">Login</Link></p>
             </div>
-        </div>
+        </>
     );
 };
 
