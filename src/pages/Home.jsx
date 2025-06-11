@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -6,6 +6,9 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useNavigate } from 'react-router';
 import { Helmet } from 'react-helmet-async';
+import axios from 'axios';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
 const sliderData = [
     {
@@ -112,6 +115,27 @@ const slideVariants = {
 const Home = () => {
     const sliderRef = useRef(null);
     const navigate = useNavigate();
+    // Courses section state
+    const [courses, setCourses] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+
+    useEffect(() => {
+        const fetchCourses = async () => {
+            setLoading(true);
+            setError('');
+            try {
+                const res = await axios.get(`${API_BASE_URL}/courses?limit=6&sort=addedAt_desc`);
+                setCourses(res.data || []);
+            } catch {
+                setError('Failed to load courses.');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchCourses();
+    }, []);
+
     var settings = {
         dots: true,
         infinite: true,
@@ -210,6 +234,41 @@ const Home = () => {
                         ))}
                     </Slider>
                 </div>
+            </section>
+            {/* Courses Section */}
+            <section className="w-full max-w-6xl mx-auto mb-16 px-2 sm:px-4">
+                <h2 className="text-3xl font-bold mb-6 text-center">Latest Courses</h2>
+                {loading ? (
+                    <div className="flex justify-center items-center min-h-[120px]">
+                        <span className="loading loading-spinner loading-lg text-primary"></span>
+                    </div>
+                ) : error ? (
+                    <div className="text-center text-red-500">{error}</div>
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-7">
+                        {courses.map(course => (
+                            <div key={course._id || course.id} className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
+                                <img
+                                    src={course.imageUrl || '/logo.png'}
+                                    alt={course.title}
+                                    className="w-full h-48 object-cover"
+                                    loading="lazy"
+                                />
+                                <div className="p-4 flex-1 flex flex-col">
+                                    <h3 className="text-xl font-semibold mb-2">{course.title}</h3>
+                                    <p className="text-gray-600 text-sm mb-2 line-clamp-2">{course.description}</p>
+                                    <div className="text-gray-400 text-xs mb-3 mt-auto">Added: {course.addedAt ? new Date(course.addedAt).toLocaleDateString() : 'N/A'}</div>
+                                    <button
+                                        className="btn btn-primary btn-sm w-full mt-2"
+                                        onClick={() => navigate(`/courses/${course._id || course.id}`)}
+                                    >
+                                        Details
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </section>
         </>
     );

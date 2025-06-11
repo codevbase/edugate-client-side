@@ -1,6 +1,8 @@
 import React, { useContext, useState } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
 import { Helmet } from 'react-helmet-async';
+import axios from 'axios';
+
 
 const AddCourse = () => {
     const { user } = useContext(AuthContext);
@@ -28,17 +30,13 @@ const AddCourse = () => {
         }
         setLoading(true);
         try {
-            // Compose course data
             const courseData = {
                 ...form,
                 addedByEmail: user?.email || '',
                 addedByName: user?.displayName || user?.email || 'Unknown',
                 addedAt: new Date().toISOString(),
             };
-            // TODO: Replace with real API call
-            await new Promise((res) => setTimeout(res, 1000));
-            // Simulate using courseData (e.g., send to API)
-            console.log('Course to add:', courseData);
+            await axios.post('http://localhost:3000/courses', courseData);
             setSuccess('Course added successfully!');
             setForm({ title: '', description: '', imageUrl: '', duration: '' });
         } catch {
