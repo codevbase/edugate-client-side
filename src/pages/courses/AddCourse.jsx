@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
 import { Helmet } from 'react-helmet-async';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 
 const AddCourse = () => {
@@ -38,6 +39,7 @@ const AddCourse = () => {
             };
             await axios.post('http://localhost:3000/courses', courseData);
             setSuccess('Course added successfully!');
+            toast.success('Course added successfully!');
             setForm({ title: '', description: '', imageUrl: '', duration: '' });
         } catch {
             setError('Failed to add course.');

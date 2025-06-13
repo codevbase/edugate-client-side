@@ -6,6 +6,7 @@ import Register from '../../pages/auth/Register';
 import NotFound from "../../pages/NotFound";
 import AddCourse from '../../pages/courses/AddCourse';
 import PrivateRoute from './PrivateRoute';
+import CourseDetails from "../../pages/courses/CourseDetails";
 
 const router = createBrowserRouter([
     {
@@ -32,6 +33,14 @@ const router = createBrowserRouter([
                     </PrivateRoute>
                 )
             },
+            {
+                path:"/courses/:courseId",
+                element: (
+                    <PrivateRoute>
+                        <CourseDetails />
+                    </PrivateRoute>
+                )
+            }
         ],
     },
     {

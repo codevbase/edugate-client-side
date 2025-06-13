@@ -5,8 +5,8 @@ import { AuthContext } from '../../contexts/AuthContext';
 
 
 const Header = () => {
-    const {user,signOutUser} = useContext(AuthContext);
-    
+    const { user, signOutUser } = useContext(AuthContext);
+
     const [showDropdown, setShowDropdown] = useState(false);
 
     const links = (
@@ -14,11 +14,19 @@ const Header = () => {
             <li><NavLink to="/" className={({ isActive }) => isActive ? 'active' : ''}>Home</NavLink></li>
 
 
-             {!user && <>
-                <li><NavLink to="/login" className={({ isActive }) => isActive ? 'active' : ''}>Login</NavLink></li>
-                <li><NavLink to="/register" className={({ isActive }) => isActive ? 'active' : ''}>Register</NavLink></li>
+            {!user && <>
+                
+                
             </>}
-           
+
+            {
+                user && <>
+                    <li><NavLink to="/my-enrolled-courses" className={({ isActive }) => isActive ? 'active' : ''}>My Courses</NavLink></li>
+                    <li><NavLink to="/add-course" className={({ isActive }) => isActive ? 'active' : ''}>Add Course</NavLink></li>
+                   
+                </>
+            }
+
         </>
     );
 
@@ -45,7 +53,7 @@ const Header = () => {
                     </div>
                     <Link to="/" className="normal-case text-xl flex items-center justify-center">
                         <div>
-                            <img src="./logo.png" alt="logo" style={{width:60, height:60}} />
+                            <img src="./logo.png" alt="logo" style={{ width: 60, height: 60 }} />
                         </div>
                         {/* <p className={`font-bold flex flex-row justify-center items-center`}>
                             <span>EduGate</span>
@@ -59,7 +67,7 @@ const Header = () => {
                     </ul>
                 </div>
                 <div className="navbar-end flex items-center gap-2">
-                    
+
                     {user ? (
                         <div className="relative">
                             <div className="group relative">
@@ -98,7 +106,10 @@ const Header = () => {
                             )} */}
                         </div>
                     ) : (
-                        <Link to="/login" className="btn">Login</Link>
+                        <div className='flex items-center gap-2'>
+                            <Link to="/login" className="btn btn-outline btn-primary">Login</Link>
+                            <Link to="/register" className="btn btn-outline btn-primary">Register</Link>
+                        </div>
                     )}
                 </div>
 
