@@ -94,13 +94,13 @@ const ManageCourses = () => {
                                                 <div className="flex gap-2">
                                                     <button
                                                         onClick={() => handleEdit(course._id)}
-                                                        className="btn btn-sm btn-warning"
+                                                        className="btn btn-sm btn-warning btn-outline"
                                                     >
                                                         Edit
                                                     </button>
                                                     <button
                                                         onClick={() => handleDeleteClick(course)}
-                                                        className="btn btn-sm btn-error"
+                                                        className="btn btn-sm btn-error btn-outline"
                                                     >
                                                         Delete
                                                     </button>

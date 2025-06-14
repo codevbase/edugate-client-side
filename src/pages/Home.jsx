@@ -32,14 +32,14 @@ const sliderStyles = {
     slide: {
         position: 'relative',
         width: '100%',
-        height: 'min(60vw, 420px)',
-        minHeight: '260px',
+        height: 'min(70vw, 500px)',
+        minHeight: '300px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         overflow: 'hidden',
-        borderRadius: '16px',
-        boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+        borderRadius: '20px',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
     },
     overlay: {
         position: 'absolute',
@@ -47,7 +47,7 @@ const sliderStyles = {
         left: 0,
         width: '100%',
         height: '100%',
-        background: 'linear-gradient(120deg, rgba(0,0,0,0.7) 40%, rgba(0,0,0,0.3) 100%)',
+        background: 'linear-gradient(120deg, rgba(0,0,0,0.85) 30%, rgba(0,0,0,0.4) 100%)',
         zIndex: 1,
     },
     content: {
@@ -56,28 +56,29 @@ const sliderStyles = {
         color: '#fff',
         textAlign: 'center',
         width: '100%',
-        padding: '0 1rem',
+        padding: '0 2rem',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
     },
     title: {
-        fontSize: 'clamp(1.5rem, 5vw, 3rem)',
+        fontSize: 'clamp(2rem, 6vw, 3.5rem)',
         fontWeight: 800,
-        marginBottom: '1rem',
+        marginBottom: '1.5rem',
         letterSpacing: '0.02em',
-        lineHeight: 1.1,
-        textShadow: '0 2px 16px rgba(0,0,0,0.4)'
+        lineHeight: 1.2,
+        textShadow: '0 2px 20px rgba(0,0,0,0.5)'
     },
     subtitle: {
-        fontSize: 'clamp(1rem, 2vw, 1.5rem)',
+        fontSize: 'clamp(1.1rem, 2.5vw, 1.6rem)',
         fontWeight: 400,
-        marginBottom: '1.5rem',
-        maxWidth: '600px',
+        marginBottom: '2rem',
+        maxWidth: '700px',
         marginLeft: 'auto',
         marginRight: 'auto',
-        textShadow: '0 2px 8px rgba(0,0,0,0.3)'
+        textShadow: '0 2px 12px rgba(0,0,0,0.4)',
+        lineHeight: 1.5
     },
     bg: {
         position: 'absolute',
@@ -87,21 +88,21 @@ const sliderStyles = {
         height: '100%',
         objectFit: 'cover',
         zIndex: 1,
-        filter: 'blur(0.5px) scale(1.04)',
-        transition: 'transform 0.5s',
+        filter: 'blur(0.8px) scale(1.05)',
+        transition: 'transform 0.8s ease-out',
     },
     cta: {
-        marginTop: '0.5rem',
-        padding: '0.75rem 2.5rem',
-        fontSize: '1.1rem',
+        marginTop: '1rem',
+        padding: '1rem 3rem',
+        fontSize: '1.2rem',
         fontWeight: 600,
         borderRadius: '999px',
         background: 'linear-gradient(90deg, #2563eb 0%, #1e293b 100%)',
         color: '#fff',
         border: 'none',
-        boxShadow: '0 2px 8px rgba(30,41,59,0.15)',
+        boxShadow: '0 4px 16px rgba(30,41,59,0.25)',
         cursor: 'pointer',
-        transition: 'background 0.2s, transform 0.2s',
+        transition: 'all 0.3s ease',
         outline: 'none',
     }
 };
@@ -171,24 +172,22 @@ const Home = () => {
             <Helmet>
                 <title>Home | EduGate</title>
             </Helmet>
-            <section className="w-full max-w-5xl mx-auto mt-8 mb-12 relative px-2 sm:px-4">
+            <section className="w-full max-w-6xl mx-auto mt-8 mb-12 relative px-4 sm:px-6">
                 <button
-                    className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow p-2 hover:bg-gray-100 transition border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm rounded-full shadow-lg p-3 hover:bg-white transition-all duration-300 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400 hover:scale-110"
                     onClick={() => sliderRef.current.slickPrev()}
                     aria-label="Previous Slide"
-                    style={{ left: 0 }}
                 >
-                    <FaChevronLeft  size={24} />
+                    <FaChevronLeft size={20} className="text-gray-700" />
                 </button>
                 <button
-                    className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow p-2 hover:bg-gray-100 transition border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm rounded-full shadow-lg p-3 hover:bg-white transition-all duration-300 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400 hover:scale-110"
                     onClick={() => sliderRef.current.slickNext()}
                     aria-label="Next Slide"
-                    style={{ right: 0 }}
                 >
-                    <FaChevronRight size={24} />
+                    <FaChevronRight size={20} className="text-gray-700" />
                 </button>
-                <div style={{ width: '100%', height: 'min(60vw, 420px)', minHeight: '260px' }}>
+                <div style={{ width: '100%', height: 'min(70vw, 500px)', minHeight: '300px' }}>
                     <Slider ref={sliderRef} {...settings}>
                         {sliderData.map((slide, idx) => (
                             <div key={idx} style={sliderStyles.slide}>
