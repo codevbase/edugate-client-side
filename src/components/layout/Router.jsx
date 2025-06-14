@@ -5,6 +5,7 @@ import Login from '../../pages/auth/Login';
 import Register from '../../pages/auth/Register';
 import NotFound from "../../pages/NotFound";
 import AddCourse from '../../pages/courses/AddCourse';
+import EditCourse from '../../pages/courses/EditCourse';
 import PrivateRoute from './PrivateRoute';
 import CourseDetails from "../../pages/courses/CourseDetails";
 import MyEnrolledCourses from "../../pages/dashboard/MyEnrolledCourses";
@@ -32,6 +33,14 @@ const router = createBrowserRouter([
                 element: (
                     <PrivateRoute>
                         <AddCourse />
+                    </PrivateRoute>
+                )
+            },
+            {
+                path: "/edit-course/:id",
+                element: (
+                    <PrivateRoute>
+                        <EditCourse />
                     </PrivateRoute>
                 )
             },

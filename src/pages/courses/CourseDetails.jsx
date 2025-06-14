@@ -1,17 +1,19 @@
 import axios from 'axios';
 import React, { useEffect, useState, useContext } from 'react';
-import { useParams } from 'react-router';
+import { useParams, useNavigate } from 'react-router';
 import { AuthContext } from '../../contexts/AuthContext';
 import { toast } from 'react-toastify';
 
 const CourseDetails = () => {
     const { courseId } = useParams();
+    const navigate = useNavigate();
     const { user } = useContext(AuthContext);
     const [course, setCourse] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isEnrolled, setIsEnrolled] = useState(false);
     const [enrolling, setEnrolling] = useState(false);
+    const isCourseCreator = user?.email === course?.addedByEmail;
 
     // Check if user is enrolled in this course
     useEffect(() => {
@@ -106,25 +108,35 @@ const CourseDetails = () => {
                 <div className="p-6">
                     <div className="flex justify-between items-start mb-6">
                         <h1 className="text-3xl font-bold">{course.title}</h1>
-                        <button
-                            onClick={handleEnroll}
-                            disabled={!user || isEnrolled || enrolling}
-                            className={`px-6 py-2 rounded-lg font-semibold transition-all ${
-                                !user
-                                    ? 'bg-gray-300 cursor-not-allowed'
+                        <div className="flex gap-3">
+                            {isCourseCreator && (
+                                <button
+                                    onClick={() => navigate(`/edit-course/${courseId}`)}
+                                    className="px-6 py-2 rounded-lg font-semibold bg-yellow-500 text-white hover:bg-yellow-600 transition-all"
+                                >
+                                    Edit Course
+                                </button>
+                            )}
+                            <button
+                                onClick={handleEnroll}
+                                disabled={!user || isEnrolled || enrolling}
+                                className={`px-6 py-2 rounded-lg font-semibold transition-all ${
+                                    !user
+                                        ? 'bg-gray-300 cursor-not-allowed'
+                                        : isEnrolled
+                                        ? 'bg-green-500 text-white'
+                                        : 'bg-blue-600 text-white hover:bg-blue-700'
+                                }`}
+                            >
+                                {!user
+                                    ? 'Login to Enroll'
                                     : isEnrolled
-                                    ? 'bg-green-500 text-white'
-                                    : 'bg-blue-600 text-white hover:bg-blue-700'
-                            }`}
-                        >
-                            {!user
-                                ? 'Login to Enroll'
-                                : isEnrolled
-                                ? 'Enrolled'
-                                : enrolling
-                                ? 'Enrolling...'
-                                : 'Enroll Now'}
-                        </button>
+                                    ? 'Enrolled'
+                                    : enrolling
+                                    ? 'Enrolling...'
+                                    : 'Enroll Now'}
+                            </button>
+                        </div>
                     </div>
                     
                     <div className="mb-6">
