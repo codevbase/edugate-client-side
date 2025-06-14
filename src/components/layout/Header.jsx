@@ -21,7 +21,7 @@ const Header = () => {
 
             {
                 user && <>
-                    <li><NavLink to="/my-enrolled-courses" className={({ isActive }) => isActive ? 'active' : ''}>My Courses</NavLink></li>
+                    <li><NavLink to="/my-enrolled-courses" className={({ isActive }) => isActive ? 'active' : ''}>My Enrolled Courses</NavLink></li>
                     <li><NavLink to="/add-course" className={({ isActive }) => isActive ? 'active' : ''}>Add Course</NavLink></li>
                    
                 </>

@@ -7,6 +7,8 @@ import NotFound from "../../pages/NotFound";
 import AddCourse from '../../pages/courses/AddCourse';
 import PrivateRoute from './PrivateRoute';
 import CourseDetails from "../../pages/courses/CourseDetails";
+import MyEnrolledCourses from "../../pages/dashboard/MyEnrolledCourses";
+
 
 const router = createBrowserRouter([
     {
@@ -38,6 +40,14 @@ const router = createBrowserRouter([
                 element: (
                     <PrivateRoute>
                         <CourseDetails />
+                    </PrivateRoute>
+                )
+            },
+            {
+                path:"/my-enrolled-courses",
+                element: (
+                    <PrivateRoute>
+                        <MyEnrolledCourses />
                     </PrivateRoute>
                 )
             }
