@@ -28,6 +28,64 @@ const sliderData = [
     }
 ];
 
+const categories = [
+    {
+        id: 1,
+        title: "Web Development",
+        description: "Master modern web technologies and frameworks",
+        icon: "🌐",
+        color: "from-blue-500 to-blue-600"
+    },
+    {
+        id: 2,
+        title: "Data Science",
+        description: "Learn data analysis and machine learning",
+        icon: "📊",
+        color: "from-purple-500 to-purple-600"
+    },
+    {
+        id: 3,
+        title: "Mobile Development",
+        description: "Build apps for iOS and Android",
+        icon: "📱",
+        color: "from-green-500 to-green-600"
+    },
+    {
+        id: 4,
+        title: "UI/UX Design",
+        description: "Create beautiful and intuitive interfaces",
+        icon: "🎨",
+        color: "from-pink-500 to-pink-600"
+    }
+];
+
+const features = [
+    {
+        id: 1,
+        title: "Expert Instructors",
+        description: "Learn from industry professionals with years of experience",
+        icon: "👨‍🏫"
+    },
+    {
+        id: 2,
+        title: "Interactive Learning",
+        description: "Engage with hands-on projects and real-world scenarios",
+        icon: "💻"
+    },
+    {
+        id: 3,
+        title: "Flexible Schedule",
+        description: "Learn at your own pace with lifetime access to courses",
+        icon: "⏰"
+    },
+    {
+        id: 4,
+        title: "Career Support",
+        description: "Get guidance on building your portfolio and landing jobs",
+        icon: "🎯"
+    }
+];
+
 const sliderStyles = {
     slide: {
         position: 'relative',
@@ -326,6 +384,77 @@ const Home = () => {
                         ))}
                     </div>
                 )}
+            </section>
+            {/* Featured Categories Section */}
+            <section className="w-full max-w-6xl mx-auto mb-16 px-2 sm:px-4">
+                <h2 className="text-3xl font-bold mb-6 text-center">Featured Categories</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {categories.map(category => (
+                        <motion.div
+                            key={category.id}
+                            className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                            whileHover={{ y: -5 }}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.5 }}
+                        >
+                            <div className={`h-32 bg-gradient-to-r ${category.color} flex items-center justify-center`}>
+                                <span className="text-5xl">{category.icon}</span>
+                            </div>
+                            <div className="p-6">
+                                <h3 className="text-xl font-semibold mb-2">{category.title}</h3>
+                                <p className="text-gray-600 text-sm">{category.description}</p>
+                                <button
+                                    onClick={() => navigate(`/courses?category=${category.title.toLowerCase()}`)}
+                                    className="mt-4 text-primary hover:text-primary/80 font-medium text-sm flex items-center gap-2 transition-colors"
+                                >
+                                    Explore Courses
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </motion.div>
+                    ))}
+                </div>
+            </section>
+
+            {/* Why Choose EduGate Section */}
+            <section className="w-full max-w-6xl mx-auto mb-16 px-2 sm:px-4">
+                <div className="text-center mb-12">
+                    <h2 className="text-3xl font-bold mb-4">Why Choose EduGate</h2>
+                    <p className="text-gray-600 max-w-2xl mx-auto">
+                        Join thousands of learners who have transformed their careers with our comprehensive learning platform
+                    </p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {features.map(feature => (
+                        <motion.div
+                            key={feature.id}
+                            className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow duration-300"
+                            whileHover={{ y: -5 }}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.5 }}
+                        >
+                            <div className="text-4xl mb-4">{feature.icon}</div>
+                            <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+                            <p className="text-gray-600 text-sm">{feature.description}</p>
+                        </motion.div>
+                    ))}
+                </div>
+                <div className="mt-12 text-center">
+                    <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => navigate('/courses')}
+                        className="btn btn-primary px-8 py-3 text-lg"
+                    >
+                        Start Learning Today
+                    </motion.button>
+                </div>
             </section>
         </>
     );
