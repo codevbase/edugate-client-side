@@ -10,6 +10,7 @@ import PrivateRoute from './PrivateRoute';
 import CourseDetails from "../../pages/courses/CourseDetails";
 import MyEnrolledCourses from "../../pages/dashboard/MyEnrolledCourses";
 import ManageCourses from "../../pages/dashboard/ManageCourses";
+import Jobs from "../../pages/Jobs";
 
 
 const router = createBrowserRouter([
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
             {
                 index: true,
                 Component: Home
+            },
+            {
+                path: "/jobs",
+                Component: Jobs
             },
             {
                 path: "/login",
