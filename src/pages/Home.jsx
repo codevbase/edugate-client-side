@@ -118,8 +118,11 @@ const Home = () => {
     const navigate = useNavigate();
     // Courses section state
     const [courses, setCourses] = useState([]);
+    const [popularCourses, setPopularCourses] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [popularLoading, setPopularLoading] = useState(false);
     const [error, setError] = useState('');
+    const [popularError, setPopularError] = useState('');
 
     useEffect(() => {
         const fetchCourses = async () => {
@@ -134,7 +137,22 @@ const Home = () => {
                 setLoading(false);
             }
         };
+
+        const fetchPopularCourses = async () => {
+            setPopularLoading(true);
+            setPopularError('');
+            try {
+                const res = await axios.get(`${API_BASE_URL}/courses?limit=6&sort=enrollments_desc`);
+                setPopularCourses(res.data || []);
+            } catch {
+                setPopularError('Failed to load popular courses.');
+            } finally {
+                setPopularLoading(false);
+            }
+        };
+
         fetchCourses();
+        fetchPopularCourses();
     }, []);
 
     var settings = {
@@ -262,6 +280,46 @@ const Home = () => {
                                         onClick={() => navigate(`/courses/${course._id || course.id}`)}
                                     >
                                         Details
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </section>
+            {/* Popular Courses Section */}
+            <section className="w-full max-w-6xl mx-auto mb-16 px-2 sm:px-4">
+                <h2 className="text-3xl font-bold mb-6 text-center">Popular Courses</h2>
+                {popularLoading ? (
+                    <div className="flex justify-center items-center min-h-[120px]">
+                        <span className="loading loading-spinner loading-lg text-primary"></span>
+                    </div>
+                ) : popularError ? (
+                    <div className="text-center text-red-500">{popularError}</div>
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-7">
+                        {popularCourses.map(course => (
+                            <div key={course._id || course.id} className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col hover:shadow-lg transition-shadow duration-300">
+                                <div className="relative">
+                                    <img
+                                        src={course.imageUrl || '/logo.png'}
+                                        alt={course.title}
+                                        className="w-full h-48 object-cover"
+                                        loading="lazy"
+                                    />
+                                    <div className="absolute top-2 right-2 bg-primary text-white px-3 py-1 rounded-full text-sm font-medium">
+                                        {course.enrollments || 0} Enrolled
+                                    </div>
+                                </div>
+                                <div className="p-4 flex-1 flex flex-col">
+                                    <h3 className="text-xl font-semibold mb-2">{course.title}</h3>
+                                    <p className="text-gray-600 text-sm mb-2 line-clamp-2">{course.description}</p>
+                                    <div className="text-gray-400 text-xs mb-3 mt-auto">Added: {course.addedAt ? new Date(course.addedAt).toLocaleDateString() : 'N/A'}</div>
+                                    <button
+                                        className="btn btn-primary btn-sm w-full mt-2 hover:scale-[1.02] transition-transform"
+                                        onClick={() => navigate(`/courses/${course._id || course.id}`)}
+                                    >
+                                        View Details
                                     </button>
                                 </div>
                             </div>
