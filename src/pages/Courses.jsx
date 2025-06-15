@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { FaSearch, FaFilter, FaSort, FaStar, FaUsers, FaClock } from 'react-icons/fa';
+import Swal from 'sweetalert2';
+import { AuthContext } from '../contexts/AuthContext';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
@@ -11,6 +13,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000
 const DEFAULT_COURSE_IMAGE = '/logo.png';
 
 const Courses = () => {
+    const { user } = useContext(AuthContext);
     const navigate = useNavigate();
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -53,14 +56,60 @@ const Courses = () => {
         }
     };
 
-    const handleEnroll = (courseId) => {
-        const user = JSON.parse(localStorage.getItem('user'));
-        if (!user) {
-            navigate('/login');
-            return;
+    const handleEnroll = async (courseId) => {
+        try {
+            // Get user from localStorage
+            // const user = JSON.parse(localStorage.getItem('user'));
+            
+            
+            if (!user) {
+                // If no user is logged in, redirect to login page
+                navigate('/login', { state: { from: { pathname: `/courses/${courseId}` } } });
+                return;
+            }
+
+            // Check if user is already enrolled
+            const checkResponse = await axios.get(`${API_BASE_URL}/enrollments/check`, {
+                params: {
+                    userEmail: user.email,
+                    courseId: courseId
+                }
+            });
+
+            if (checkResponse.data.isEnrolled) {
+                // If already enrolled, navigate to course details
+                navigate(`/courses/${courseId}`);
+                return;
+            }
+
+            // If not enrolled, proceed with enrollment
+            const enrollResponse = await axios.post(`${API_BASE_URL}/enrollments`, {
+                userEmail: user.email,
+                courseId: courseId,
+                enrolledAt: new Date().toISOString()
+            });
+
+            if (enrollResponse.data.message) {
+                // Show success message
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: enrollResponse.data.message,
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                
+                // Navigate to course details
+                navigate(`/courses/${courseId}`);
+            }
+        } catch (error) {
+            console.error('Error enrolling in course:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Enrollment Failed',
+                text: error.response?.data?.error || 'Failed to enroll in the course. Please try again.'
+            });
         }
-        // Handle enrollment logic here
-        navigate(`/courses/${courseId}`);
     };
 
     const filteredCourses = courses.filter(course => {
