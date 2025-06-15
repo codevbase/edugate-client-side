@@ -11,6 +11,7 @@ import CourseDetails from "../../pages/courses/CourseDetails";
 import MyEnrolledCourses from "../../pages/dashboard/MyEnrolledCourses";
 import ManageCourses from "../../pages/dashboard/ManageCourses";
 import Jobs from "../../pages/Jobs";
+import Courses from '../../pages/Courses';
 
 
 const router = createBrowserRouter([
@@ -73,6 +74,10 @@ const router = createBrowserRouter([
                         <ManageCourses />
                     </PrivateRoute>
                 )
+            },
+            {
+                path: '/courses',
+                element: <Courses />
             }
         ],
     },
