@@ -12,17 +12,28 @@ const Register = () => {
     const { createUser, setUser, signInWithGoogle, signInWithGithub } = useContext(AuthContext);
     const navigate = useNavigate();
     const location = useLocation();
-    const [passwordError, setPasswordError] = useState(''); // State for password error
-    const [loading, setLoading] = useState(false); // State for loading
+    const [passwordError, setPasswordError] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    const validateEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
 
     const handleRegister = async e => {
         e.preventDefault();
         const form = e.target;
-        const name = form.name.value;
-        const email = form.email.value;
+        const name = form.name.value.trim();
+        const email = form.email.value.trim();
         const password = form.password.value;
         const confirmPassword = form.confirmPassword.value;
-        const photoUrl = form.photourl.value;
+        const photoUrl = form.photourl.value.trim();
+
+        // Email validation
+        if (!validateEmail(email)) {
+            setPasswordError('Please enter a valid email address.');
+            return;
+        }
 
         // Password validation
         if (password.length < 8) {
@@ -59,24 +70,58 @@ const Register = () => {
             setLoading(true);
             const result = await createUser(email, password);
             const user = result.user;
+            
+            // Update profile with name and photo URL
             await updateProfile(user, {
                 displayName: name,
-                photoURL: photoUrl,
+                photoURL: photoUrl || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(name),
             });
+
+            // Reload user to get updated profile
             await auth.currentUser.reload();
-            setUser(auth.currentUser); // Update context with latest user info
+            setUser(auth.currentUser);
+
+            // Reset form and show success message
             form.reset();
             navigate(location?.state?.from?.pathname || '/');
             Swal.fire({
                 position: 'top-end',
                 icon: 'success',
-                title: 'User created successfully',
+                title: 'Registration successful!',
                 showConfirmButton: false,
                 timer: 1500
             });
+
+            // Navigate to the intended destination or home
+            navigate(location?.state?.from?.pathname || '/');
         } catch (error) {
-            setPasswordError(error.message || 'Registration failed.');
-            console.error(error);
+            console.error('Registration error:', error);
+            let errorMessage = 'Registration failed. Please try again.';
+            
+            // Handle specific Firebase errors
+            switch (error.code) {
+                case 'auth/email-already-in-use':
+                    errorMessage = 'This email is already registered. Please use a different email or try logging in.';
+                    break;
+                case 'auth/invalid-email':
+                    errorMessage = 'Please enter a valid email address.';
+                    break;
+                case 'auth/operation-not-allowed':
+                    errorMessage = 'Email/password accounts are not enabled. Please contact support.';
+                    break;
+                case 'auth/weak-password':
+                    errorMessage = 'Password is too weak. Please use a stronger password.';
+                    break;
+                default:
+                    errorMessage = error.message || 'Registration failed. Please try again.';
+            }
+            
+            setPasswordError(errorMessage);
+            Swal.fire({
+                icon: 'error',
+                title: 'Registration Failed',
+                text: errorMessage,
+            });
         } finally {
             setLoading(false);
         }

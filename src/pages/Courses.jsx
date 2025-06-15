@@ -19,6 +19,8 @@ const Courses = () => {
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [sortBy, setSortBy] = useState('addedAt_desc');
     const [showFilters, setShowFilters] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const coursesPerPage = 20;
 
     // Categories for filtering
     const categories = [
@@ -36,12 +38,12 @@ const Courses = () => {
 
     useEffect(() => {
         fetchCourses();
-    }, [sortBy]);
+    }, [sortBy, currentPage]);
 
     const fetchCourses = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`${API_BASE_URL}/courses?sort=${sortBy}`);
+            const response = await axios.get(`${API_BASE_URL}/courses?sort=${sortBy}&limit=${coursesPerPage}`);
             setCourses(response.data);
         } catch (error) {
             setError('Failed to fetch courses. Please try again later.');
@@ -163,66 +165,95 @@ const Courses = () => {
                 ) : error ? (
                     <div className="text-center text-red-500">{error}</div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {filteredCourses.map(course => (
-                            <motion.div
-                                key={course._id}
-                                className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300"
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.5 }}
-                            >
-                                <figure className="relative h-48 bg-gray-100">
-                                    <img
-                                        src={course.imageUrl || DEFAULT_COURSE_IMAGE}
-                                        alt={course.title}
-                                        className="w-full h-full object-cover"
-                                        loading="lazy"
-                                        onError={(e) => {
-                                            e.target.onerror = null;
-                                            e.target.src = DEFAULT_COURSE_IMAGE;
-                                        }}
-                                    />
-                                    {/* <div className="absolute top-4 right-4 bg-primary text-white px-2 py-1 rounded">
-                                        {course.category}
-                                    </div> */}
-                                </figure>
-                                <div className="card-body">
-                                    <h2 className="card-title">{course.title}</h2>
-                                    <p className="text-gray-600 line-clamp-2">
-                                        {course.description}
-                                    </p>
-                                    
-                                    <div className="flex items-center gap-4 mt-4 text-sm text-gray-500">
-                                        <div className="flex items-center gap-1">
-                                            <FaUsers />
-                                            <span>{course.enrollments || 0} students</span>
-                                        </div>
-                                        <div className="flex items-center gap-1">
-                                            <FaStar className="text-yellow-400" />
-                                            <span>{course.rating || 0}</span>
-                                        </div>
-                                        <div className="flex items-center gap-1">
-                                            <FaClock />
-                                            <span>{course.duration || 'N/A'}</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="card-actions justify-between items-center mt-4">
-                                        {/* <div className="text-lg font-semibold">
-                                            ${course.price || 'Free'}
+                    <>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            {filteredCourses.map(course => (
+                                <motion.div
+                                    key={course._id}
+                                    className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.5 }}
+                                >
+                                    <figure className="relative h-48 bg-gray-100">
+                                        <img
+                                            src={course.imageUrl || DEFAULT_COURSE_IMAGE}
+                                            alt={course.title}
+                                            className="w-full h-full object-cover"
+                                            loading="lazy"
+                                            onError={(e) => {
+                                                e.target.onerror = null;
+                                                e.target.src = DEFAULT_COURSE_IMAGE;
+                                            }}
+                                        />
+                                        {/* <div className="absolute top-4 right-4 bg-primary text-white px-2 py-1 rounded">
+                                            {course.category}
                                         </div> */}
-                                        <button
-                                            onClick={() => handleEnroll(course._id)}
-                                            className="btn btn-primary"
-                                        >
-                                            Enroll Now
-                                        </button>
+                                    </figure>
+                                    <div className="card-body">
+                                        <h2 className="card-title">{course.title}</h2>
+                                        <p className="text-gray-600 line-clamp-2">
+                                            {course.description}
+                                        </p>
+                                        
+                                        <div className="flex items-center gap-4 mt-4 text-sm text-gray-500">
+                                            <div className="flex items-center gap-1">
+                                                <FaUsers />
+                                                <span>{course.enrollments || 0} students</span>
+                                            </div>
+                                            <div className="flex items-center gap-1">
+                                                <FaStar className="text-yellow-400" />
+                                                <span>{course.rating || 0}</span>
+                                            </div>
+                                            <div className="flex items-center gap-1">
+                                                <FaClock />
+                                                <span>{course.duration || 'N/A'}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="card-actions justify-end mt-4">
+                                            <button
+                                                onClick={() => handleEnroll(course._id)}
+                                                className="btn btn-primary"
+                                            >
+                                                Enroll Now
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </div>
+                                </motion.div>
+                            ))}
+                        </div>
+
+                        {/* Course Count */}
+                        {!loading && !error && filteredCourses.length > 0 && (
+                            <div className="text-center mt-8 text-gray-600">
+                                Showing {filteredCourses.length} of {courses.length} courses
+                            </div>
+                        )}
+
+                        {/* Pagination */}
+                        {!loading && !error && courses.length > coursesPerPage && (
+                            <div className="flex justify-center mt-8 gap-2">
+                                <button
+                                    className="btn btn-outline"
+                                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                    disabled={currentPage === 1}
+                                >
+                                    Previous
+                                </button>
+                                <span className="btn btn-ghost">
+                                    Page {currentPage}
+                                </span>
+                                <button
+                                    className="btn btn-outline"
+                                    onClick={() => setCurrentPage(prev => prev + 1)}
+                                    disabled={filteredCourses.length < coursesPerPage}
+                                >
+                                    Next
+                                </button>
+                            </div>
+                        )}
+                    </>
                 )}
 
                 {/* No Results Message */}
