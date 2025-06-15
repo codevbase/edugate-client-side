@@ -106,6 +106,29 @@ const CourseDetails = () => {
         }
     };
 
+    const handleUnenroll = async () => {
+        try {
+            await axios.delete(`${API_BASE_URL}/enrollments`, {
+                data: {
+                    userEmail: user.email,
+                    courseId: courseId
+                }
+            });
+            
+            setIsEnrolled(false);
+            // Update seat info
+            setSeatInfo(prev => ({
+                ...prev,
+                availableSeats: prev.availableSeats + 1,
+                isFull: false
+            }));
+            toast.success('Successfully unenrolled from the course');
+        } catch (error) {
+            console.error('Error unenrolling from course:', error);
+            toast.error('Failed to unenroll from the course');
+        }
+    };
+
     if (loading) {
         return (
             <div className="flex justify-center items-center min-h-screen">
@@ -166,8 +189,8 @@ const CourseDetails = () => {
                             )}
                             {isEnrolled && (
                                 <button
-                                    onClick={() => navigate('/my-courses')}
-                                    className="px-6 py-2 rounded-lg font-semibold bg-green-500 text-white hover:bg-green-600 transition-all"
+                                    onClick={handleUnenroll}
+                                    className="px-6 py-2 rounded-lg font-semibold bg-green-500 text-white hover:bg-red-600 transition-all"
                                 >
                                     Enrolled
                                 </button>
