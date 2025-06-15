@@ -4,6 +4,8 @@ import { useParams, useNavigate } from 'react-router';
 import { AuthContext } from '../../contexts/AuthContext';
 import { toast } from 'react-toastify';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+
 const CourseDetails = () => {
     const { courseId } = useParams();
     const navigate = useNavigate();
@@ -13,20 +15,26 @@ const CourseDetails = () => {
     const [error, setError] = useState(null);
     const [isEnrolled, setIsEnrolled] = useState(false);
     const [enrolling, setEnrolling] = useState(false);
+    const [seatInfo, setSeatInfo] = useState(null);
+    const [userEnrollments, setUserEnrollments] = useState([]);
     const isCourseCreator = user?.email === course?.addedByEmail;
 
-    // Check if user is enrolled in this course
+    // Check if user is enrolled in this course and get their enrollments
     useEffect(() => {
         const checkEnrollment = async () => {
             if (user?.email) {
                 try {
-                    const response = await axios.get(`http://localhost:3000/enrollments/check`, {
-                        params: {
-                            userEmail: user.email,
-                            courseId: courseId
-                        }
-                    });
-                    setIsEnrolled(response.data.isEnrolled);
+                    const [enrollmentResponse, userEnrollmentsResponse] = await Promise.all([
+                        axios.get(`${API_BASE_URL}/enrollments/check`, {
+                            params: {
+                                userEmail: user.email,
+                                courseId: courseId
+                            }
+                        }),
+                        axios.get(`${API_BASE_URL}/enrollments/user/${user.email}`)
+                    ]);
+                    setIsEnrolled(enrollmentResponse.data.isEnrolled);
+                    setUserEnrollments(userEnrollmentsResponse.data);
                 } catch (err) {
                     console.error('Error checking enrollment:', err);
                 }
@@ -36,13 +44,17 @@ const CourseDetails = () => {
         checkEnrollment();
     }, [user, courseId]);
 
-    // Fetch course details
+    // Fetch course details and seat information
     useEffect(() => {
         const fetchCourseDetails = async () => {
             try {
                 setLoading(true);
-                const response = await axios.get(`http://localhost:3000/courses/${courseId}`);
-                setCourse(response.data);
+                const [courseResponse, seatsResponse] = await Promise.all([
+                    axios.get(`${API_BASE_URL}/courses/${courseId}`),
+                    axios.get(`${API_BASE_URL}/enrollments/seats/${courseId}`)
+                ]);
+                setCourse(courseResponse.data);
+                setSeatInfo(seatsResponse.data);
                 setError(null);
             } catch (err) {
                 setError('Failed to fetch course details. Please try again later.');
@@ -61,17 +73,33 @@ const CourseDetails = () => {
             return;
         }
 
+        if (seatInfo?.isFull) {
+            toast.error('No seats available for this course');
+            return;
+        }
+
+        // Check if user has reached the 3-course limit
+        if (userEnrollments.length >= 3) {
+            toast.error('You cannot enroll in more than 3 courses at the same time');
+            return;
+        }
+
         try {
             setEnrolling(true);
-            await axios.post('http://localhost:3000/enrollments', {
+            const response = await axios.post(`${API_BASE_URL}/enrollments`, {
                 userEmail: user.email,
                 courseId: courseId,
                 enrolledAt: new Date().toISOString()
             });
             setIsEnrolled(true);
-            toast.success('Successfully enrolled in the course!');
+            setSeatInfo(prev => ({
+                ...prev,
+                availableSeats: response.data.availableSeats,
+                isFull: response.data.availableSeats <= 0
+            }));
+            toast.success(response.data.message);
         } catch (err) {
-            toast.error('Failed to enroll in the course. Please try again.');
+            toast.error(err.response?.data?.error || 'Failed to enroll in the course. Please try again.');
             console.error('Error enrolling in course:', err);
         } finally {
             setEnrolling(false);
@@ -117,25 +145,38 @@ const CourseDetails = () => {
                                     Edit Course
                                 </button>
                             )}
-                            <button
-                                onClick={handleEnroll}
-                                disabled={!user || isEnrolled || enrolling}
-                                className={`px-6 py-2 rounded-lg font-semibold transition-all ${
-                                    !user
-                                        ? 'bg-gray-300 cursor-not-allowed'
-                                        : isEnrolled
-                                        ? 'bg-green-500 text-white'
-                                        : 'bg-blue-600 text-white hover:bg-blue-700'
-                                }`}
-                            >
-                                {!user
-                                    ? 'Login to Enroll'
-                                    : isEnrolled
-                                    ? 'Enrolled'
-                                    : enrolling
-                                    ? 'Enrolling...'
-                                    : 'Enroll Now'}
-                            </button>
+                            {!isEnrolled && !seatInfo?.isFull && (
+                                <button
+                                    onClick={handleEnroll}
+                                    disabled={!user || enrolling || userEnrollments.length >= 3}
+                                    className={`px-6 py-2 rounded-lg font-semibold transition-all ${
+                                        !user || userEnrollments.length >= 3
+                                            ? 'bg-gray-300 cursor-not-allowed'
+                                            : 'bg-blue-600 text-white hover:bg-blue-700'
+                                    }`}
+                                >
+                                    {!user
+                                        ? 'Login to Enroll'
+                                        : userEnrollments.length >= 3
+                                        ? 'Enrollment Limit Reached'
+                                        : enrolling
+                                        ? 'Enrolling...'
+                                        : `Enroll Now (${seatInfo?.availableSeats} seats left)`}
+                                </button>
+                            )}
+                            {isEnrolled && (
+                                <button
+                                    onClick={() => navigate('/my-courses')}
+                                    className="px-6 py-2 rounded-lg font-semibold bg-green-500 text-white hover:bg-green-600 transition-all"
+                                >
+                                    Enrolled
+                                </button>
+                            )}
+                            {!isEnrolled && seatInfo?.isFull && (
+                                <div className="px-6 py-2 rounded-lg font-semibold bg-red-500 text-white">
+                                    No Seats Left
+                                </div>
+                            )}
                         </div>
                     </div>
                     
@@ -161,6 +202,12 @@ const CourseDetails = () => {
                             <div className="bg-gray-50 p-4 rounded-lg">
                                 <h3 className="font-semibold text-gray-700">Instructor</h3>
                                 <p className="text-gray-600">{course.addedByName || 'Unknown'}</p>
+                            </div>
+                            <div className="bg-gray-50 p-4 rounded-lg">
+                                <h3 className="font-semibold text-gray-700">Available Seats</h3>
+                                <p className="text-gray-600">
+                                    {seatInfo?.availableSeats} of {seatInfo?.totalSeats} seats left
+                                </p>
                             </div>
                         </div>
 
