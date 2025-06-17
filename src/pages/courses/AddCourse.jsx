@@ -4,7 +4,6 @@ import { Helmet } from 'react-helmet-async';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-
 const AddCourse = () => {
     const { user } = useContext(AuthContext);
     const [form, setForm] = useState({

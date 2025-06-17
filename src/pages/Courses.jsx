@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useNavigate } from 'react-router';
-import axios from 'axios';
 import { motion } from 'framer-motion';
 import { FaSearch, FaFilter, FaSort, FaStar, FaUsers, FaClock } from 'react-icons/fa';
-import Swal from 'sweetalert2';
 import { AuthContext } from '../contexts/AuthContext';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
@@ -14,10 +13,8 @@ const DEFAULT_COURSE_IMAGE = '/logo.png';
 
 const Courses = () => {
     const { user } = useContext(AuthContext);
-    const navigate = useNavigate();
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [sortBy, setSortBy] = useState('addedAt_desc');
@@ -44,71 +41,46 @@ const Courses = () => {
     }, [sortBy, currentPage]);
 
     const fetchCourses = async () => {
+        setLoading(true);
         try {
-            setLoading(true);
             const response = await axios.get(`${API_BASE_URL}/courses?sort=${sortBy}&limit=${coursesPerPage}`);
             setCourses(response.data);
         } catch (error) {
-            setError('Failed to fetch courses. Please try again later.');
             console.error('Error fetching courses:', error);
         } finally {
             setLoading(false);
         }
     };
 
-    const handleEnroll = async (courseId) => {
-        try {
-            // Get user from localStorage
-            // const user = JSON.parse(localStorage.getItem('user'));
-            
-            
-            if (!user) {
-                // If no user is logged in, redirect to login page
-                navigate('/login', { state: { from: { pathname: `/courses/${courseId}` } } });
-                return;
-            }
+    const handleEnroll = async (course) => {
+        if (!user) {
+            toast.error('Please login to enroll in courses');
+            return;
+        }
 
-            // Check if user is already enrolled
-            const checkResponse = await axios.get(`${API_BASE_URL}/enrollments/check`, {
-                params: {
-                    userEmail: user.email,
-                    courseId: courseId
+        try {
+            // Get Firebase token
+            const token = await user.getIdToken();
+            
+            const enrollResponse = await axios.post(`${API_BASE_URL}/enrollments`, {
+                courseId: course._id,
+                courseName: course.title,
+                price: course.price
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
                 }
             });
 
-            if (checkResponse.data.isEnrolled) {
-                // If already enrolled, navigate to course details
-                navigate(`/courses/${courseId}`);
-                return;
-            }
-
-            // If not enrolled, proceed with enrollment
-            const enrollResponse = await axios.post(`${API_BASE_URL}/enrollments`, {
-                userEmail: user.email,
-                courseId: courseId,
-                enrolledAt: new Date().toISOString()
-            });
-
-            if (enrollResponse.data.message) {
-                // Show success message
-                Swal.fire({
-                    position: 'top-end',
-                    icon: 'success',
-                    title: enrollResponse.data.message,
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-                
-                // Navigate to course details
-                navigate(`/courses/${courseId}`);
+            if (enrollResponse.data.success) {
+                toast.success('Successfully enrolled in course!');
+                // Refresh courses to update enrollment status
+                fetchCourses();
             }
         } catch (error) {
             console.error('Error enrolling in course:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Enrollment Failed',
-                text: error.response?.data?.error || 'Failed to enroll in the course. Please try again.'
-            });
+            toast.error('Failed to enroll in course');
         }
     };
 
@@ -119,14 +91,6 @@ const Courses = () => {
             course.category.toLowerCase() === selectedCategory.toLowerCase();
         return matchesSearch && matchesCategory;
     });
-
-    const formatDate = (dateString) => {
-        return new Date(dateString).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-    };
 
     return (
         <>
@@ -211,8 +175,6 @@ const Courses = () => {
                     <div className="flex justify-center items-center min-h-[400px]">
                         <span className="loading loading-spinner loading-lg text-primary"></span>
                     </div>
-                ) : error ? (
-                    <div className="text-center text-red-500">{error}</div>
                 ) : (
                     <>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -235,9 +197,6 @@ const Courses = () => {
                                                 e.target.src = DEFAULT_COURSE_IMAGE;
                                             }}
                                         />
-                                        {/* <div className="absolute top-4 right-4 bg-primary text-white px-2 py-1 rounded">
-                                            {course.category}
-                                        </div> */}
                                     </figure>
                                     <div className="card-body">
                                         <h2 className="card-title">{course.title}</h2>
@@ -262,7 +221,7 @@ const Courses = () => {
 
                                         <div className="card-actions justify-end mt-4">
                                             <button
-                                                onClick={() => handleEnroll(course._id)}
+                                                onClick={() => handleEnroll(course)}
                                                 className="btn btn-primary"
                                             >
                                                 Enroll Now
@@ -274,14 +233,14 @@ const Courses = () => {
                         </div>
 
                         {/* Course Count */}
-                        {!loading && !error && filteredCourses.length > 0 && (
+                        {!loading && filteredCourses.length > 0 && (
                             <div className="text-center mt-8 text-gray-600">
                                 Showing {filteredCourses.length} of {courses.length} courses
                             </div>
                         )}
 
                         {/* Pagination */}
-                        {!loading && !error && courses.length > coursesPerPage && (
+                        {!loading && courses.length > coursesPerPage && (
                             <div className="flex justify-center mt-8 gap-2">
                                 <button
                                     className="btn btn-outline"
@@ -306,7 +265,7 @@ const Courses = () => {
                 )}
 
                 {/* No Results Message */}
-                {!loading && !error && filteredCourses.length === 0 && (
+                {!loading && filteredCourses.length === 0 && (
                     <div className="text-center py-12">
                         <h3 className="text-xl font-semibold mb-2">No courses found</h3>
                         <p className="text-gray-600">
