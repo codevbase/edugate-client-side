@@ -11,7 +11,14 @@ const MyEnrolledCourses = () => {
     useEffect(() => {
         const fetchEnrolledCourses = async () => {
             try {
-                const response = await axios.get(`http://localhost:3000/enrollments/user/${user?.email}`);
+                // Get the Firebase token
+                const token = await user.getIdToken();
+                
+                const response = await axios.get(`http://localhost:3000/enrollments/my-courses`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 setEnrolledCourses(response.data);
             } catch (error) {
                 console.error('Error fetching enrolled courses:', error);
@@ -23,16 +30,24 @@ const MyEnrolledCourses = () => {
 
         if (user?.email) {
             fetchEnrolledCourses();
+        } else {
+            setLoading(false);
         }
     }, [user]);
 
     const handleRemoveEnrollment = async (courseId) => {
         try {
+            // Get the Firebase token
+            const token = await user.getIdToken();
+            
             await axios.delete(`http://localhost:3000/enrollments`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
                 data: {
                     userEmail: user.email,
                     courseId: courseId
-                }
+                },
             });
             
             // Update the local state to remove the course

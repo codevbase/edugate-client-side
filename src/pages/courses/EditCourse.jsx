@@ -55,17 +55,21 @@ const EditCourse = () => {
         }
         setLoading(true);
         try {
-            const courseData = {
-                ...form,
-                updatedByEmail: user?.email || '',
-                updatedByName: user?.displayName || user?.email || 'Unknown',
-                updatedAt: new Date().toISOString(),
-            };
-            await axios.put(`http://localhost:3000/courses/${id}`, courseData);
+            // Get Firebase token
+            const token = await user.getIdToken();
+            
+            await axios.put(`http://localhost:3000/courses/${id}`, form, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
             toast.success('Course updated successfully!');
             navigate(`/courses/${id}`);
-        } catch {
+        } catch (error) {
+            console.error('Error updating course:', error);
             setError('Failed to update course.');
+            toast.error('Failed to update course.');
         } finally {
             setLoading(false);
         }

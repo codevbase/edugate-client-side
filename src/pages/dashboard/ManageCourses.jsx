@@ -16,8 +16,13 @@ const ManageCourses = () => {
     useEffect(() => {
         const fetchMyCourses = async () => {
             try {
+                // Get Firebase token
+                const token = await user.getIdToken();
+                
                 const response = await axios.get(`http://localhost:3000/courses/my-courses`, {
-                    params: { userEmail: user?.email }
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
                 setCourses(response.data);
             } catch (error) {
@@ -44,7 +49,14 @@ const ManageCourses = () => {
 
     const handleDeleteConfirm = async () => {
         try {
-            await axios.delete(`http://localhost:3000/courses/${courseToDelete._id}`);
+            // Get Firebase token
+            const token = await user.getIdToken();
+            
+            await axios.delete(`http://localhost:3000/courses/${courseToDelete._id}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             setCourses(courses.filter(course => course._id !== courseToDelete._id));
             toast.success('Course deleted successfully');
         } catch (error) {

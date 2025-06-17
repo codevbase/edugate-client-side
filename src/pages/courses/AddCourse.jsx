@@ -31,18 +31,22 @@ const AddCourse = () => {
         }
         setLoading(true);
         try {
-            const courseData = {
-                ...form,
-                addedByEmail: user?.email || '',
-                addedByName: user?.displayName || user?.email || 'Unknown',
-                addedAt: new Date().toISOString(),
-            };
-            await axios.post('http://localhost:3000/courses', courseData);
+            // Get Firebase token
+            const token = await user.getIdToken();
+            
+            await axios.post('http://localhost:3000/courses', form, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
             setSuccess('Course added successfully!');
             toast.success('Course added successfully!');
             setForm({ title: '', description: '', imageUrl: '', duration: '' });
-        } catch {
+        } catch (error) {
+            console.error('Error adding course:', error);
             setError('Failed to add course.');
+            toast.error('Failed to add course.');
         } finally {
             setLoading(false);
         }
