@@ -3,6 +3,7 @@ import { AuthContext } from './AuthContext';
 import { useState } from 'react';
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup, signOut, GithubAuthProvider } from 'firebase/auth';
 import { auth } from '../config/firebase';
+import axios from 'axios';
 // import firebase from 'firebase/compat/app';
 
 const AuthProvider = ({children}) => {
@@ -53,7 +54,18 @@ const AuthProvider = ({children}) => {
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((currentUser) => {
             setUser(currentUser);
-            setLoading(false);    
+            setLoading(false);  
+            if(currentUser?.email){
+                const userData = {email: currentUser.email}
+                axios.post('http://localhost:3000/jwt', userData, {
+                    withCredentials: true
+                })
+                .then(res => {
+                    console.log('token after jwt',res.data)
+                })
+                .catch(err => console.log(err));
+                
+            }  
             console.log('Observer inside  useEffect Auth state changed:', currentUser);       
         });
         return () => unsubscribe();

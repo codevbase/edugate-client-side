@@ -24,14 +24,24 @@ const CourseDetails = () => {
         const checkEnrollment = async () => {
             if (user?.email) {
                 try {
+                    // Get Firebase ID token
+                    const firebaseToken = await user.getIdToken();
+                    
                     const [enrollmentResponse, userEnrollmentsResponse] = await Promise.all([
                         axios.get(`${API_BASE_URL}/enrollments/check`, {
                             params: {
                                 userEmail: user.email,
                                 courseId: courseId
+                            },
+                            headers: {
+                                'Authorization': `Bearer ${firebaseToken}`
                             }
                         }),
-                        axios.get(`${API_BASE_URL}/enrollments/user/${user.email}`)
+                        axios.get(`${API_BASE_URL}/enrollments/user/${user.email}`, {
+                            headers: {
+                                'Authorization': `Bearer ${firebaseToken}`
+                            }
+                        })
                     ]);
                     setIsEnrolled(enrollmentResponse.data.isEnrolled);
                     setUserEnrollments(userEnrollmentsResponse.data);
@@ -86,11 +96,20 @@ const CourseDetails = () => {
 
         try {
             setEnrolling(true);
+            
+            // Get Firebase ID token
+            const firebaseToken = await user.getIdToken();
+            
             const response = await axios.post(`${API_BASE_URL}/enrollments`, {
-                userEmail: user.email,
                 courseId: courseId,
                 enrolledAt: new Date().toISOString()
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${firebaseToken}`,
+                    'Content-Type': 'application/json'
+                }
             });
+            
             setIsEnrolled(true);
             setSeatInfo(prev => ({
                 ...prev,
@@ -108,10 +127,14 @@ const CourseDetails = () => {
 
     const handleUnenroll = async () => {
         try {
+            // Get Firebase ID token
+            const firebaseToken = await user.getIdToken();
+            
             await axios.delete(`${API_BASE_URL}/enrollments`, {
-                data: {
-                    userEmail: user.email,
-                    courseId: courseId
+                data: { courseId: courseId },
+                headers: {
+                    'Authorization': `Bearer ${firebaseToken}`,
+                    'Content-Type': 'application/json'
                 }
             });
             
