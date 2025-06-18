@@ -19,8 +19,31 @@ const Courses = () => {
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [sortBy, setSortBy] = useState('addedAt_desc');
     const [showFilters, setShowFilters] = useState(false);
+    const [isEnrolled, setIsEnrolled] = useState(false);
+    const [userEnrollments, setUserEnrollments] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
+    const [enrollingCourseId, setEnrollingCourseId] = useState(null);
     const coursesPerPage = 20;
+
+    // Remove courseId from checkEnrollment and useEffect
+    useEffect(() => {
+        const fetchUserEnrollments = async () => {
+            if (user?.email) {
+                try {
+                    const firebaseToken = await user.getIdToken();
+                    const userEnrollmentsResponse = await axios.get(`${API_BASE_URL}/enrollments/user/${user.email}`, {
+                        headers: {
+                            'Authorization': `Bearer ${firebaseToken}`
+                        }
+                    });
+                    setUserEnrollments(userEnrollmentsResponse.data);
+                } catch (err) {
+                    console.error('Error fetching user enrollments:', err);
+                }
+            }
+        };
+        fetchUserEnrollments();
+    }, [user]);
 
     // Categories for filtering
     const categories = [
@@ -54,33 +77,41 @@ const Courses = () => {
 
     const handleEnroll = async (course) => {
         if (!user) {
-            toast.error('Please login to enroll in courses');
+            toast.error('Please login to enroll in this course');
+            return;
+        }
+
+        // Optionally, check seatInfo if you have it per course
+        // if (seatInfo?.isFull) {
+        //     toast.error('No seats available for this course');
+        //     return;
+        // }
+
+        if (userEnrollments.length >= 3) {
+            toast.error('You cannot enroll in more than 3 courses at the same time');
             return;
         }
 
         try {
-            // Get Firebase token
-            const token = await user.getIdToken();
-            
-            const enrollResponse = await axios.post(`${API_BASE_URL}/enrollments`, {
+            setEnrollingCourseId(course._id);
+            const firebaseToken = await user.getIdToken();
+            const response = await axios.post(`${API_BASE_URL}/enrollments`, {
                 courseId: course._id,
-                courseName: course.title,
-                price: course.price
+                enrolledAt: new Date().toISOString()
             }, {
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': `Bearer ${firebaseToken}`,
                     'Content-Type': 'application/json'
                 }
             });
-
-            if (enrollResponse.data.success) {
-                toast.success('Successfully enrolled in course!');
-                // Refresh courses to update enrollment status
-                fetchCourses();
-            }
-        } catch (error) {
-            console.error('Error enrolling in course:', error);
-            toast.error('Failed to enroll in course');
+            toast.success(response.data.message);
+            // Optionally update enrollments state here
+            setUserEnrollments(prev => [...prev, { courseId: course._id }]);
+        } catch (err) {
+            toast.error(err.response?.data?.error || 'Failed to enroll in the course. Please try again.');
+            console.error('Error enrolling in course:', err);
+        } finally {
+            setEnrollingCourseId(null);
         }
     };
 
@@ -223,8 +254,9 @@ const Courses = () => {
                                             <button
                                                 onClick={() => handleEnroll(course)}
                                                 className="btn btn-primary"
+                                                disabled={!user || enrollingCourseId === course._id || userEnrollments.some(e => e.courseId === course._id) || userEnrollments.length >= 3}
                                             >
-                                                Enroll Now
+                                                {enrollingCourseId === course._id ? 'Enrolling...' : userEnrollments.some(e => e.courseId === course._id) ? 'Enrolled' : 'Enroll Now'}
                                             </button>
                                         </div>
                                     </div>
@@ -278,4 +310,4 @@ const Courses = () => {
     );
 };
 
-export default Courses; 
+export default Courses;
