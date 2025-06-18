@@ -19,7 +19,7 @@ const ManageCourses = () => {
                 // Get Firebase token
                 const token = await user.getIdToken();
                 
-                const response = await axios.get(`http://localhost:3000/courses/my-courses`, {
+                const response = await axios.get(`https://edugate-server-side.vercel.app/courses/my-courses`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -52,7 +52,7 @@ const ManageCourses = () => {
             // Get Firebase token
             const token = await user.getIdToken();
             
-            await axios.delete(`http://localhost:3000/courses/${courseToDelete._id}`, {
+            await axios.delete(`https://edugate-server-side.vercel.app/courses/${courseToDelete._id}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }

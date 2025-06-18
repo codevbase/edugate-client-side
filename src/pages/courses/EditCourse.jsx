@@ -22,7 +22,7 @@ const EditCourse = () => {
     useEffect(() => {
         const fetchCourse = async () => {
             try {
-                const response = await axios.get(`http://localhost:3000/courses/${id}`);
+                const response = await axios.get(`https://edugate-server-side.vercel.app/courses/${id}`);
                 const courseData = response.data;
                 setForm({
                     title: courseData.title || '',
@@ -58,7 +58,7 @@ const EditCourse = () => {
             // Get Firebase token
             const token = await user.getIdToken();
             
-            await axios.put(`http://localhost:3000/courses/${id}`, form, {
+            await axios.put(`https://edugate-server-side.vercel.app/courses/${id}`, form, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'

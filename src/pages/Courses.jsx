@@ -6,7 +6,7 @@ import { AuthContext } from '../contexts/AuthContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://edugate-server-side.vercel.app';
 
 // Default course image
 const DEFAULT_COURSE_IMAGE = '/logo.png';

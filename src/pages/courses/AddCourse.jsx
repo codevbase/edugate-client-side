@@ -33,7 +33,7 @@ const AddCourse = () => {
             // Get Firebase token
             const token = await user.getIdToken();
             
-            await axios.post('http://localhost:3000/courses', form, {
+            await axios.post('https://edugate-server-side.vercel.app/courses', form, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
