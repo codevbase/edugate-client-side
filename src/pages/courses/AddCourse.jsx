@@ -4,6 +4,8 @@ import { Helmet } from 'react-helmet-async';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+
 const AddCourse = () => {
     const { user } = useContext(AuthContext);
     const [form, setForm] = useState({
@@ -33,7 +35,7 @@ const AddCourse = () => {
             // Get Firebase token
             const token = await user.getIdToken();
             
-            await axios.post('https://edugate-server-side.vercel.app/courses', form, {
+            await axios.post(`${API_BASE_URL}/courses`, form, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'

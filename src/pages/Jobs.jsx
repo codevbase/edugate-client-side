@@ -7,7 +7,7 @@ import { FaBriefcase, FaMapMarkerAlt, FaMoneyBillWave, FaClock } from 'react-ico
 import { AuthContext } from '../contexts/AuthContext';
 import { toast } from 'react-toastify';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://edugate-server-side.vercel.app';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
 const Jobs = () => {
     const navigate = useNavigate();

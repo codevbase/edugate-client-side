@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router';
 import { Helmet } from 'react-helmet-async';
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://edugate-server-side.vercel.app';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
 const sliderData = [
     {

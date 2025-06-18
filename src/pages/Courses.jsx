@@ -7,7 +7,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://edugate-server-side.vercel.app';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
 // Default course image
 const DEFAULT_COURSE_IMAGE = '/logo.png';
@@ -21,7 +21,6 @@ const Courses = () => {
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [sortBy, setSortBy] = useState('addedAt_desc');
     const [showFilters, setShowFilters] = useState(false);
-    const [isEnrolled, setIsEnrolled] = useState(false);
     const [userEnrollments, setUserEnrollments] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [enrollingCourseId, setEnrollingCourseId] = useState(null);
@@ -222,14 +221,10 @@ const Courses = () => {
                                 >
                                     <figure className="relative h-48 bg-gray-100">
                                         <img
-                                            src={course.imageUrl || DEFAULT_COURSE_IMAGE}
+                                            src={course.image || course.imageUrl || DEFAULT_COURSE_IMAGE}
                                             alt={course.title}
-                                            className="w-full h-full object-cover"
-                                            loading="lazy"
-                                            onError={(e) => {
-                                                e.target.onerror = null;
-                                                e.target.src = DEFAULT_COURSE_IMAGE;
-                                            }}
+                                            className="w-full h-48 object-cover rounded-t-lg"
+                                            onError={e => { e.target.src = DEFAULT_COURSE_IMAGE; }}
                                         />
                                     </figure>
                                     <div className="card-body">
@@ -257,9 +252,20 @@ const Courses = () => {
                                             <button
                                                 onClick={() => handleEnroll(course)}
                                                 className="btn btn-primary"
-                                                disabled={!user || enrollingCourseId === course._id || userEnrollments.some(e => e.courseId === course._id) || userEnrollments.length >= 3}
+                                                disabled={
+                                                    !user ||
+                                                    enrollingCourseId === course._id ||
+                                                    (user && userEnrollments.some(e => e.courseId === course._id)) ||
+                                                    (user && userEnrollments.length >= 3)
+                                                }
                                             >
-                                                {enrollingCourseId === course._id ? 'Enrolling...' : userEnrollments.some(e => e.courseId === course._id) ? 'Enrolled' : 'Enroll Now'}
+                                                {!user
+                                                    ? 'Enroll Now'
+                                                    : userEnrollments.some(e => e.courseId === course._id)
+                                                        ? 'Enrolled'
+                                                        : enrollingCourseId === course._id
+                                                            ? 'Enrolling...'
+                                                            : 'Enroll Now'}
                                             </button>
                                         </div>
                                     </div>

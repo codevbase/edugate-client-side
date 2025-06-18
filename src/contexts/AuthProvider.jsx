@@ -6,6 +6,8 @@ import { auth } from '../config/firebase';
 import axios from 'axios';
 // import firebase from 'firebase/compat/app';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+
 const AuthProvider = ({children}) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -57,7 +59,7 @@ const AuthProvider = ({children}) => {
             setLoading(false);  
             if(currentUser?.email){
                 const userData = {email: currentUser.email}
-                axios.post('https://edugate-server-side.vercel.app/jwt', userData, {
+                axios.post(`${API_BASE_URL}/jwt`, userData, {
                     withCredentials: true
                 })
                 .then(res => {

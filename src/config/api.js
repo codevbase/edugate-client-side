@@ -4,7 +4,7 @@ import axios from 'axios';
 const API_CONFIG = {
     // Development server
     development: {
-        baseURL: 'https://edugate-server-side.vercel.app',
+        baseURL: 'http://localhost:3000',
         credentials: 'include', // Include cookies in requests
         headers: {
             'Content-Type': 'application/json'
@@ -12,7 +12,7 @@ const API_CONFIG = {
     },
     // Production server
     production: {
-        baseURL: 'https://edugate-server-side.vercel.app',
+        baseURL: 'http://localhost:3000',
         credentials: 'include', // Include cookies in requests
         headers: {
             'Content-Type': 'application/json'

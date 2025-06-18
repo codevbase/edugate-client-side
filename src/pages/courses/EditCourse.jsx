@@ -5,6 +5,8 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useParams, useNavigate } from 'react-router';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+
 const EditCourse = () => {
     const { user } = useContext(AuthContext);
     const { id } = useParams();
@@ -22,7 +24,7 @@ const EditCourse = () => {
     useEffect(() => {
         const fetchCourse = async () => {
             try {
-                const response = await axios.get(`https://edugate-server-side.vercel.app/courses/${id}`);
+                const response = await axios.get(`${API_BASE_URL}/courses/${id}`);
                 const courseData = response.data;
                 setForm({
                     title: courseData.title || '',
@@ -58,7 +60,7 @@ const EditCourse = () => {
             // Get Firebase token
             const token = await user.getIdToken();
             
-            await axios.put(`https://edugate-server-side.vercel.app/courses/${id}`, form, {
+            await axios.put(`${API_BASE_URL}/courses/${id}`, form, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'

@@ -5,6 +5,8 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+
 const ManageCourses = () => {
     const { user } = useContext(AuthContext);
     const navigate = useNavigate();
@@ -19,7 +21,7 @@ const ManageCourses = () => {
                 // Get Firebase token
                 const token = await user.getIdToken();
                 
-                const response = await axios.get(`https://edugate-server-side.vercel.app/courses/my-courses`, {
+                const response = await axios.get(`${API_BASE_URL}/courses/my-courses`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -52,7 +54,7 @@ const ManageCourses = () => {
             // Get Firebase token
             const token = await user.getIdToken();
             
-            await axios.delete(`https://edugate-server-side.vercel.app/courses/${courseToDelete._id}`, {
+            await axios.delete(`${API_BASE_URL}/courses/${courseToDelete._id}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
