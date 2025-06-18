@@ -5,6 +5,7 @@ import { FaSearch, FaFilter, FaSort, FaStar, FaUsers, FaClock } from 'react-icon
 import { AuthContext } from '../contexts/AuthContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://edugate-server-side.vercel.app';
 
@@ -13,6 +14,7 @@ const DEFAULT_COURSE_IMAGE = '/logo.png';
 
 const Courses = () => {
     const { user } = useContext(AuthContext);
+    const navigate = useNavigate();
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -78,6 +80,7 @@ const Courses = () => {
     const handleEnroll = async (course) => {
         if (!user) {
             toast.error('Please login to enroll in this course');
+            navigate('/login');
             return;
         }
 
