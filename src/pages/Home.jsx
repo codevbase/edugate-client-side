@@ -105,7 +105,7 @@ const sliderStyles = {
         left: 0,
         width: '100%',
         height: '100%',
-        background: 'linear-gradient(120deg, rgba(0,0,0,0.85) 30%, rgba(0,0,0,0.4) 100%)',
+        background: 'linear-gradient(120deg, rgba(0,0,0,0.85) 30%, rgba(0,0,0,0.4) 100%), url("/edugate1.jpg")',
         zIndex: 1,
     },
     content: {
@@ -114,6 +114,7 @@ const sliderStyles = {
         color: '#fff',
         textAlign: 'center',
         width: '100%',
+        height: '55vh',
         padding: '0 2rem',
         display: 'flex',
         flexDirection: 'column',
